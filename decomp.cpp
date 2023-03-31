@@ -62,18 +62,66 @@ int main(int argc, char** argv)
                 s.clear();
             }
         }
-            value = s;
-            cout << "Key: " << key << " Char: " << value << endl;
 
-            input[key] = value;
-
-            cout << lines[i] << endl;
+        if (s == "space") {
+            value = " ";
+        } 
+        else if (s == "newline") {
+            value = "\n";
+        }
+        else {
+        value = s;
         }
 
 
-        int bits;
-        getline(ifs, tmp);
-        bits = stoi(tmp); //Num of bits
-        cout << bits << endl;
         
+        cout << "Key: " << key << " Char: " << value << endl;
+        input[key] = value;
+        cout << lines[i] << endl;
+    }
+
+    int bits;
+    getline(ifs, tmp);
+    bits = stoi(tmp); //Num of bits
+    cout << bits << endl;
+
+    string binaryData;
+    getline(ifs, binaryData);
+        
+    // Convert binary data to binary string
+    string binaryString;
+    for (char ch : binaryData) {
+        binaryString += bitset<8>(ch).to_string();
+    }
+    binaryString = binaryString.substr(0, bits);
+
+    // Decode binary string using prefix codes
+    string currentPrefix;
+    string decodedText;
+    for (char binaryChar : binaryString) {
+        currentPrefix += binaryChar;
+        if (input.count(currentPrefix) > 0) {
+            decodedText += input[currentPrefix];
+            currentPrefix.clear();
+        }
+    }
+
+    // Create the output file name
+    string inputFilename = string(argv[1]);
+    size_t lastDot = inputFilename.find_last_of(".");
+    string baseFilename = inputFilename.substr(0, lastDot);
+    string outputFilename = baseFilename + "2.txt";
+
+    // Write the decoded text to the output file
+    ofstream ofs;
+    ofs.open(outputFilename, ios::out);
+    if (!ofs) {
+        std::cout << "Could not create output file " << outputFilename << endl;
+        exit(0);
+    }
+
+    ofs << decodedText;
+    ofs.close();
+
+    return 0;
 }
